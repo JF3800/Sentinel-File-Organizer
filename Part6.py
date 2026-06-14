@@ -11,14 +11,17 @@ class SentinelHandler(FileSystemEventHandler):
         with open("/home/anoynmous/Documents/Sentinel-File-Organizer/config.json", "r") as f:
             config = json.load(f)
             rules = config["rules"]
-            for rule in rules:
-                if file.suffix == rule["file_type"]:
-                    destination = Path(rule["destination"])
-                    destination.mkdir(parents = True, exist_ok = True)
-                    shutil.move(file, destination)
-                    config["history"].append({"source": str(file), "destination":str(destination)})
-                    with open("/home/anoynmous/Documents/Sentinel-File-Organizer/config.json", "w") as f:
-                        json.dump(config, f)
+            try:
+                for rule in rules:
+                    if file.suffix.lower() in rule["file_type"]:
+                        destination = Path(rule["destination"])
+                        destination.mkdir(parents = True, exist_ok = True)
+                        shutil.move(file, destination)
+                        config["history"].append({"source": str(file), "destination":str(destination)})
+                        with open("/home/anoynmous/Documents/Sentinel-File-Organizer/config.json", "w") as f:
+                            json.dump(config, f)
+            except Exception as e:
+                print("Something Went wrong!!!")
                     
         print(event.src_path)
 
